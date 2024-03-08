@@ -1,0 +1,258 @@
+su - oracle
+sqlplus / as sysdba
+create user ggadmin identified by ggadmin;
+alter user ggadmin quota unlimited on ggadmin;
+grant create session, connect, resource, alter system, select any dictionary, flashback any table to ggadmin container=all;
+exec dbms_goldengate_auth.grant_admin_privilege(grantee => 'ggadmin',container=>'all');
+PL/SQL procedure successfully completed.
+alter user ggadmin set container_data=all container=current;
+grant alter any table to ggadmin container=ALL;
+alter system set enable_goldengate_replication=true scope=bot
+alter database force logging;
+alter pluggable database add supplemental log data;
+Pluggable database altered.
+
+-- to add integrated extract 
+su - goldengate
+cd $GG_HOME
+./ggsci
+add extract ext, integrated tranlog, begin now
+info all
+add exttrail /u02/app/oracle/GG_HOME/lt, extract ext
+--start extract always from cdb$root 
+start extract ext atscn <scn>;
+
+[goldengate@pm ~]$ cat /home/goldengate/.bash_profile
+# .bash_profile
+
+# Get the aliases and functions
+if [ -f ~/.bashrc ]; then
+        . ~/.bashrc
+fi
+
+
+# User specific environment and startup programs
+export ORACLE_HOME=/u02/app/oracle/product/19c/dbhome_1
+export ORACLE_SID=sakri
+export GG_HOME=/u02/app/oracle/GG_HOME
+export PATH=$GG_HOME:$PATH
+export LD_LIBRARY_PATH=$GG_HOME/lib:$LD_LIBRARY_PATH
+[goldengate@pm ~]$
+[goldengate@pm ~]$
+[goldengate@pm ~]$
+[goldengate@pm ~]$
+[goldengate@pm ~]$ cat /u02/app/oracle/GG_HOME/dirprm/ext.prm
+EXTRACT ext
+setenv (ORACLE_SID = "sakri")
+setenv (ORACLE_HOME = "/u02/app/oracle/product/19c/dbhome_1")
+USERID ggadmin, PASSWORD ggadmin
+EXTTRAIL /u02/app/oracle/GG_HOME/dirprm/lt
+--TRANLOGOPTIONS ASMUSER your_asm_user, ASMPASSWORD your_asm_password
+TABLE cdb$root.ggadmin.*;
+
+
+SQL> show pdbs;
+
+    CON_ID CON_NAME                       OPEN MODE  RESTRICTED
+---------- ------------------------------ ---------- ----------
+         2 PDB$SEED                       READ ONLY  NO
+         3 PDB                            READ WRITE NO
+
+
+ALTER PLUGGABLE DATABASE pdb$seed,pdb OPEN READ ONLY FORCE;
+ALTER PLUGGABLE DATABASE pdb$seed,pdb CLOSE IMMEDIATE;
+
+ALTER PLUGGABLE DATABASE ALL OPEN;
+ALTER PLUGGABLE DATABASE ALL CLOSE IMMEDIATE;
+
+ALTER PLUGGABLE DATABASE ALL EXCEPT pdb$seed OPEN;
+ALTER PLUGGABLE DATABASE ALL EXCEPT pdb CLOSE IMMEDIATE;
+
+
+GGSCI (pm.shaikh.com as ggadmin@sakri/CDB$ROOT) 51> delete extract ext
+Deleted EXTRACT EXT.
+
+
+GGSCI (pm.shaikh.com as ggadmin@sakri/CDB$ROOT) 52> info all
+
+Program     Status      Group       Lag at Chkpt  Time Since Chkpt
+
+MANAGER     RUNNING
+
+
+GGSCI (pm.shaikh.com as ggadmin@sakri/CDB$ROOT) 53> edit param ext
+
+
+
+GGSCI (pm.shaikh.com as ggadmin@sakri/CDB$ROOT) 54> add extract ext, integrated tranlog, begin now
+EXTRACT (Integrated) added.
+
+
+GGSCI (pm.shaikh.com as ggadmin@sakri/CDB$ROOT) 55> info all
+
+Program     Status      Group       Lag at Chkpt  Time Since Chkpt
+
+MANAGER     RUNNING
+EXTRACT     STOPPED     EXT         00:00:00      00:00:01
+
+GGSCI (pm.shaikh.com as ggadmin@sakri/CDB$ROOT) 96> add exttrail /u02/app/oracle/GG_HOME/dirprm/lt, extract ext
+EXTTRAIL added.
+
+GGSCI (pm.shaikh.com as ggadmin@sakri/CDB$ROOT) 97> info all
+
+Program     Status      Group       Lag at Chkpt  Time Since Chkpt
+
+MANAGER     RUNNING
+EXTRACT     ABENDED     EXT         00:00:00      00:01:18
+
+
+GGSCI (pm.shaikh.com as ggadmin@sakri/CDB$ROOT) 98> start extract ext
+
+Sending START request to MANAGER ...
+EXTRACT EXT starting
+
+
+GGSCI (pm.shaikh.com as ggadmin@sakri/CDB$ROOT) 56> register extract ext database
+
+2024-03-01 23:36:09  ERROR   OGG-08223  ERROR: One or more containers must be specified when registering Extract for a container database.
+
+
+GGSCI (pm.shaikh.com as ggadmin@sakri/CDB$ROOT) 57> register extract ext database container (pdb)
+
+2024-03-01 23:36:58  INFO    OGG-02003  Extract EXT successfully registered with database at SCN 2267932.
+
+
+GGSCI (pm.shaikh.com as ggadmin@sakri/CDB$ROOT) 58> info all
+
+Program     Status      Group       Lag at Chkpt  Time Since Chkpt
+
+MANAGER     RUNNING
+EXTRACT     STOPPED     EXT         00:00:00      00:01:05
+
+
+GGSCI (pm.shaikh.com as ggadmin@sakri/CDB$ROOT) 59> start extract ext
+
+Sending START request to MANAGER ...
+EXTRACT EXT starting
+
+
+GGSCI (pm.shaikh.com as ggadmin@sakri/CDB$ROOT) 60> info all
+
+Program     Status      Group       Lag at Chkpt  Time Since Chkpt
+
+MANAGER     RUNNING
+EXTRACT     STOPPED     EXT         00:00:00      00:01:10
+
+
+GGSCI (pm.shaikh.com as ggadmin@sakri/CDB$ROOT) 61> info all
+
+Program     Status      Group       Lag at Chkpt  Time Since Chkpt
+
+MANAGER     RUNNING
+EXTRACT     STOPPED     EXT         00:00:00      00:01:12
+
+
+GGSCI (pm.shaikh.com as ggadmin@sakri/CDB$ROOT) 62> info all
+
+Program     Status      Group       Lag at Chkpt  Time Since Chkpt
+
+MANAGER     RUNNING
+EXTRACT     STOPPED     EXT         00:00:00      00:01:13
+
+
+GGSCI (pm.shaikh.com as ggadmin@sakri/CDB$ROOT) 63> register extract ext database container all
+
+2024-03-01 23:37:23  ERROR   OGG-15406  Missing opening parenthesis in container list for REGISTER EXTRACT command.
+
+
+GGSCI (pm.shaikh.com as ggadmin@sakri/CDB$ROOT) 64> register extract ext database container (pdb$seed)
+
+2024-03-01 23:37:53  ERROR   OGG-01754  Cannot register or unregister EXTRACT EXT because the Extract is currently running. Stop the Extract and retry the command.
+
+
+GGSCI (pm.shaikh.com as ggadmin@sakri/CDB$ROOT) 65> info all
+
+Program     Status      Group       Lag at Chkpt  Time Since Chkpt
+
+MANAGER     RUNNING
+EXTRACT     RUNNING     EXT         00:00:00      00:02:01
+
+
+GGSCI (pm.shaikh.com as ggadmin@sakri/CDB$ROOT) 66> info all
+
+Program     Status      Group       Lag at Chkpt  Time Since Chkpt
+
+MANAGER     RUNNING
+EXTRACT     RUNNING     EXT         00:00:00      00:02:02
+
+
+GGSCI (pm.shaikh.com as ggadmin@sakri/CDB$ROOT) 67> info all
+
+Program     Status      Group       Lag at Chkpt  Time Since Chkpt
+
+MANAGER     RUNNING
+EXTRACT     RUNNING     EXT         00:00:00      00:02:04
+
+
+GGSCI (pm.shaikh.com as ggadmin@sakri/CDB$ROOT) 68> info all
+
+Program     Status      Group       Lag at Chkpt  Time Since Chkpt
+
+MANAGER     RUNNING
+EXTRACT     RUNNING     EXT         00:00:00      00:02:05
+
+
+GGSCI (pm.shaikh.com as ggadmin@sakri/CDB$ROOT) 69> info all
+
+Program     Status      Group       Lag at Chkpt  Time Since Chkpt
+
+MANAGER     RUNNING
+EXTRACT     RUNNING     EXT         00:00:00      00:02:07
+
+
+GGSCI (pm.shaikh.com as ggadmin@sakri/CDB$ROOT) 70> info all
+
+Program     Status      Group       Lag at Chkpt  Time Since Chkpt
+
+MANAGER     RUNNING
+EXTRACT     RUNNING     EXT         00:00:00      00:02:09
+
+
+GGSCI (pm.shaikh.com as ggadmin@sakri/CDB$ROOT) 71> info all
+
+Program     Status      Group       Lag at Chkpt  Time Since Chkpt
+
+MANAGER     RUNNING
+EXTRACT     RUNNING     EXT         00:00:00      00:02:12
+
+
+GGSCI (pm.shaikh.com as ggadmin@sakri/CDB$ROOT) 72> info ext
+ERROR: You must specify a group name.
+
+GGSCI (pm.shaikh.com as ggadmin@sakri/CDB$ROOT) 73> info extract ext
+
+EXTRACT    EXT       Initialized   2024-03-01 23:35   Status RUNNING
+Checkpoint Lag       00:00:00 (updated 00:02:18 ago)
+Process ID           8654
+Log Read Checkpoint  Oracle Integrated Redo Logs
+                     2024-03-01 23:35:57
+                     SCN 0.0 (0)
+
+
+GGSCI (pm.shaikh.com as ggadmin@sakri/CDB$ROOT) 74> info all
+
+Program     Status      Group       Lag at Chkpt  Time Since Chkpt
+
+MANAGER     RUNNING
+EXTRACT     RUNNING     EXT         00:00:00      00:02:20
+
+
+GGSCI (pm.shaikh.com as ggadmin@sakri/CDB$ROOT) 75> info all
+
+Program     Status      Group       Lag at Chkpt  Time Since Chkpt
+
+MANAGER     RUNNING
+EXTRACT     RUNNING     EXT         00:00:00      00:02:22
+
+
+GGSCI (pm.shaikh.com as ggadmin@sakri/CDB$ROOT) 76>

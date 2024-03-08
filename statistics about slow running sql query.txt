@@ -1,0 +1,27 @@
+-- Enable timing of SQL statements
+SET TIMING ON;
+
+-- Enable autotrace for detailed execution plans
+SET AUTOTRACE ON;
+
+-- Set the threshold for identifying slow queries (adjust as needed)
+ALTER SESSION SET STATISTICS_LEVEL = ALL;
+ALTER SESSION SET TIMED_STATISTICS = TRUE;
+ALTER SESSION SET SQL_TRACE = TRUE;
+
+-- Your SQL query goes here
+SELECT *
+FROM your_table
+WHERE your_condition;
+
+-- Reset session settings
+ALTER SESSION SET STATISTICS_LEVEL = TYPICAL;
+ALTER SESSION SET TIMED_STATISTICS = FALSE;
+ALTER SESSION SET SQL_TRACE = FALSE;
+
+-- Disable timing of SQL statements
+SET TIMING OFF;
+
+-- Display execution plan
+-- Uncomment the line below if you want to see the execution plan
+-- SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY_CURSOR(NULL, NULL, 'ALLSTATS LAST'));

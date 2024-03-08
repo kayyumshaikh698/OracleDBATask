@@ -1,0 +1,61 @@
+/* Use REGEXP_SUBSTR() to find file_names of datafile, controlfile, redo_log files, archive log files, etc */
+
+-- datafiles only fullpath or absolute
+SQL> select regexp_substr(file_name,'[a-zA-Z0-9_.]{0,255}+.$') dbfilename from dba_data_files;
+
+DBFILENAME                              
+----------------------------------------
+system01.dbf
+sysaux01.dbf
+undotbs01.dbf
+users01.dbf
+ggadmin_01.dbf
+
+-- controlfiles only file_name
+SQL> select regexp_substr(name,'[a-zA-Z0-9_.]{0,255}+.$') controlfilename from v$controlfile;
+
+CONTROLFILENAME                         
+----------------------------------------
+control01.ctl
+control02.ctl
+
+-- redo log files only file_name
+SQL> select regexp_substr(member,'[a-zA-Z0-9_.]{0,255}+.$') redologname from v$logfile order by redologname asc;
+
+REDOLOGNAME                             
+----------------------------------------
+redo01.log
+redo02.log
+redo03.log
+
+-- archive logs file only file_name
+SQL> select regexp_substr(name,'[a-zA-Z0-9_.]{0,255}+.$') archivelogname from v$archived_log order by archivelogname asc;
+
+ARCHIVELOGNAME                          
+----------------------------------------
+o1_mf_1_10_ly4692rh_.arc
+o1_mf_1_11_ly469ndb_.arc
+o1_mf_1_12_ly5kz44s_.arc
+o1_mf_1_13_ly5y5x5y_.arc
+o1_mf_1_6_lxv94zcn_.arc
+o1_mf_1_7_ly40prsj_.arc
+o1_mf_1_8_ly45mthx_.arc
+o1_mf_1_9_ly45o4g5_.arc
+
+8 rows selected. 
+
+-- pfile
+SQL> select regexp_substr(value,'[a-zA-Z0-9_.]{0,255}+.$') spfilename from v$parameter where name like '%spfile%';
+
+SPFILENAME                              
+----------------------------------------
+spfilesakri.ora
+
+-- rman backup filename
+SQL> select regexp_substr(handle,'[a-zA-Z0-9_.]{0,255}+.$') RMANBKPNAME from v$backup_piece;
+
+RMANBKPNAME                             
+----------------------------------------
+o1_mf_s_1162043456_lxv6vb78_.bkp
+o1_mf_s_1162047676_lxvbz8cn_.bkp
+

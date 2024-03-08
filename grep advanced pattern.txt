@@ -1,0 +1,143 @@
+kayyum@AbdulKayyum:~$ cat sample.txt
+this is the first line.
+second line is this.
+
+this is the third line.
+
+4th line is this.
+
+# this is the commented line.
+this is an datafile system_01.dbf on oracle database.
+kayyum@AbdulKayyum:~$
+kayyum@AbdulKayyum:~$
+kayyum@AbdulKayyum:~$ # grep :- remove empty lines
+kayyum@AbdulKayyum:~$ grep -v "^$" sample.txt
+this is the first line.
+second line is this.
+this is the third line.
+4th line is this.
+# this is the commented line.
+this is an datafile system_01.dbf on oracle database.
+kayyum@AbdulKayyum:~$
+kayyum@AbdulKayyum:~$ # grep :- remove commented lines.
+kayyum@AbdulKayyum:~$
+kayyum@AbdulKayyum:~$ grep -v "^#" sample.txt
+this is the first line.
+second line is this.
+
+this is the third line.
+
+4th line is this.
+
+this is an datafile system_01.dbf on oracle database.
+kayyum@AbdulKayyum:~$ # grep :- to find oracle datafiles
+kayyum@AbdulKayyum:~$
+kayyum@AbdulKayyum:~$ grep -o "[a-zA-Z0-9_\]\{0,255\}\.dbf" sample.txt
+system_01.dbf
+kayyum@AbdulKayyum:~$
+kayyum@AbdulKayyum:~$ # grep :- find first 10 characters each line
+kayyum@AbdulKayyum:~$ grep -o "^.\{1,10\}" sample.txt
+this is th
+second lin
+this is th
+4th line i
+# this is
+this is an
+kayyum@AbdulKayyum:~$ # grep :- find last 10 characters each line
+kayyum@AbdulKayyum:~$ grep -o ".\{1,10\}$" sample.txt
+irst line.
+e is this.
+hird line.
+e is this.
+nted line.
+ database.
+kayyum@AbdulKayyum:~$ # grep :- remove commented and empty lines
+kayyum@AbdulKayyum:~$
+kayyum@AbdulKayyum:~$ grep -v "^#\|^$" sample.txt
+this is the first line.
+second line is this.
+this is the third line.
+4th line is this.
+this is an datafile system_01.dbf on oracle database.
+kayyum@AbdulKayyum:~$ # grep :- to find ' " ' double quotes in the file
+kayyum@AbdulKayyum:~$
+kayyum@AbdulKayyum:~$ grep -e "\"" file.txt
+"{country}"."{india}"
+"{country}"."{pakistan}"
+"{country}"."{china}"
+"{country}"."{japan}"
+"{country}"."{bangladesk}"
+kayyum@AbdulKayyum:~$
+kayyum@AbdulKayyum:~$
+kayyum@AbdulKayyum:~$ # grep :- to find '{ ' and '}' curly braces
+kayyum@AbdulKayyum:~$
+kayyum@AbdulKayyum:~$ grep -e "\{" file.txt
+"{country}"."{india}"
+"{country}"."{pakistan}"
+"{country}"."{china}"
+"{country}"."{japan}"
+"{country}"."{bangladesk}"
+kayyum@AbdulKayyum:~$
+kayyum@AbdulKayyum:~$ grep -e "\}" file.txt
+"{country}"."{india}"
+"{country}"."{pakistan}"
+"{country}"."{china}"
+"{country}"."{japan}"
+"{country}"."{bangladesk}"
+kayyum@AbdulKayyum:~$
+kayyum@AbdulKayyum:~$ # combine
+kayyum@AbdulKayyum:~$ grep -e "\{\|\}" file.txt
+"{country}"."{india}"
+"{country}"."{pakistan}"
+"{country}"."{china}"
+"{country}"."{japan}"
+"{country}"."{bangladesk}"
+kayyum@AbdulKayyum:~$
+kayyum@AbdulKayyum:~$ grep -e "\"\.\"" file.txt
+"{country}"."{india}"
+"{country}"."{pakistan}"
+"{country}"."{china}"
+"{country}"."{japan}"
+"{country}"."{bangladesk}"
+kayyum@AbdulKayyum:~$
+kayyum@AbdulKayyum:~$
+kayyum@AbdulKayyum:~$
+kayyum@AbdulKayyum:~$ grep -e "[a-zA-Z\]\{0,255\}" file.txt
+"{country}"."{india}"
+"{country}"."{pakistan}"
+"{country}"."{china}"
+
+"{country}"."{japan}"
+"{country}"."{bangladesk}"
+kayyum@AbdulKayyum:~$
+
+
+
+"^[a-zA-Z\]\{0,255\}\@\[a-zA-Z\]\{0,255\}\:\~\$"
+
+grep -e "^[a-zA-Z\]\{0,255\}\+\@\+[a-zA-Z\]\{0,255\}\+\:\+\~\+\\$" fun.txt : kayyum@AbdulKayyum:~$
+
+grep -v "^[a-zA-Z\]\{0,255\}\+\@\+[a-zA-Z\]\{0,255\}\+\:\+\~\+\\$" fun.txt  : kayyum@AbdulKayyum:~$
+
+kayyum@AbdulKayyum:~$ cat new.txt | grep -e "grep\|#" | grep -o "grep.*\|#.*"
+# grep :- remove empty lines
+grep -v "^$" sample.txt
+# grep :- remove commented lines.
+grep -v "^#" sample.txt
+# grep :- to find oracle datafiles
+grep -o "[a-zA-Z0-9_\]\{0,255\}\.dbf" sample.txt
+# grep :- find first 10 characters each line
+grep -o "^.\{1,10\}" sample.txt
+# grep :- find last 10 characters each line
+grep -o ".\{1,10\}$" sample.txt
+# grep :- remove commented and empty lines
+grep -v "^#\|^$" sample.txt
+# grep :- to find ' " ' double quotes in the file
+grep -e "\"" file.txt
+# grep :- to find '{ ' and '}' curly braces
+grep -e "\{" file.txt
+grep -e "\}" file.txt
+# combine
+grep -e "\{\|\}" file.txt
+grep -e "\"\.\"" file.txt
+grep -e "[a-zA-Z\]\{0,255\}" file.txt
